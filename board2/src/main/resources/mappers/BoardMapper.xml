@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="BoardDao">
+
+	<select id="boardList" resultType="com.bluebiz.board.dto.BoardDto">
+		SELECT * FROM 
+		  (SELECT ROWNUM RNUM,title,content,id,created_date,modified_date,board_id,delete_flag 
+		  FROM 
+		  (SELECT * FROM board ORDER BY board_id DESC)) 
+		  <![CDATA[ WHERE RNUM>=#{startRow} AND RNUM<=#{endRow}]]> AND delete_flag='n'
+	</select>
+	
+	<select id="listCount" resultType="int">
+		SELECT COUNT(*) FROM board
+	</select>
+	
+	<select id="detail" resultType="com.bluebiz.board.dto.BoardDto">
+		SELECT *
+		FROM board
+		WHERE board_id=#{param1}
+	</select>
+	
+	<select id="reply_list" resultType="com.bluebiz.board.dto.ReplyDto">
+		SELECT *
+		FROM reply
+		WHERE parent_id=#{param1} and reply_dflag='n'
+	</select>
+	
+	<insert id="writeOk" parameterType="java.util.HashMap">
+		INSERT INTO board
+		  VALUES(#{title},#{content},#{id},sysdate,null,b_seq.nextval,'n')
+	</insert>
+	
+	<select id="modify_view" resultType="com.bluebiz.board.dto.BoardDto">
+		SELECT * FROM board
+		  WHERE board_id=#{param1}
+	</select>
+	
+	<update id="modifyOk" parameterType="java.util.HashMap">
+		UPDATE board
+		  SET title=#{title},content=#{content},modified_date=sysdate
+		  WHERE board_id=#{board_id}
+	</update>
+	
+	<update id="boardDelete">
+		UPDATE board
+		  SET delete_flag='y'
+		  WHERE board_id=#{param1}
+	</update>
+	
+	<insert id="reply_write" parameterType="java.util.HashMap">
+		INSERT INTO reply
+		  VALUES(r_seq.nextval, #{re_content}, #{authId}, #{board_id}, sysdate, null, 'n')
+	
+	</insert>
+	
+	<update id="reply_delete" parameterType="java.util.HashMap">
+		UPDATE reply
+		  SET reply_dflag='y'
+		  WHERE reply_id=#{reply_id}
+	</update>
+	
+	<update id="reply_modify" parameterType="java.util.HashMap">
+		UPDATE reply
+		  SET reply_content=#{re_content}, reply_modified_date=sysdate
+		  WHERE reply_id=#{reply_id}
+	</update>
+	
+	
+</mapper>

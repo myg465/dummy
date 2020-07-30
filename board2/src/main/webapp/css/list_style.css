@@ -1,0 +1,5 @@
+@charset "utf-8";
+
+.page_div{ float:left; list-style-type: none; width:340px; position: relative; left:-50px;}
+
+.page_div li { float:left;}
